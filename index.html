@@ -77,6 +77,12 @@
         }
         .correct { color: #4caf50; } /* Guessed words in green */
         .missed { color: #f44336; }  /* Missed words in red */
+        .notification {
+            display: none; /* Hidden by default */
+            color: red;
+            margin-top: 10px;
+            transition: opacity 0.5s ease; /* Smooth transition for fading */
+        }
         .icon-container {
             position: fixed; /* Make the icons fixed to the bottom */
             bottom: 0; /* Stick to the bottom of the viewport */
@@ -110,6 +116,9 @@
 
 <ul id="guess-list"></ul>
 
+<!-- Notification for wrong answer -->
+<div class="notification" id="notification">Not on word list</div>
+
 <!-- Icons at the bottom -->
 <div class="icon-container">
     <img src="https://github.com/FreddieThePebble/Words-In-Words/raw/main/Icons/info.png" alt="Info" />
@@ -141,6 +150,7 @@
     const exitIcon = document.getElementById("exit-icon");
     const musicIcon = document.getElementById("music-icon");
     const refreshIcon = document.getElementById("refresh-icon");
+    const notification = document.getElementById("notification");
 
     // Load word list and initialize the game
     async function loadWords() {
@@ -166,84 +176,72 @@
         }
         guessedWords.clear(); // Clear guessed words
         guessList.innerHTML = ''; // Clear the displayed guess list
+        notification.style.display = 'none'; // Hide notification before loading a new word
         loadWords(); // Load a new target word
     }
 
     // Submit guess
     function submitGuess() {
         const guess = guessInput.value.toLowerCase().trim();
-        if (guess && guess.includes(targetWord)) {
-            if (!guessedWords.has(guess) && possibleAnswers.includes(guess)) {
-                guessedWords.add(guess);
-                const listItem = document.createElement('li');
-                listItem.textContent = guess;
-                listItem.className = 'correct';
-                guessList.appendChild(listItem);
-                if (soundEnabled) {
-                    correctSound.currentTime = 0; // Reset sound to start
-                    correctSound.play(); // Play correct sound
-                }
+        if (possibleAnswers.includes(guess) && !guessedWords.has(guess)) {
+            guessedWords.add(guess);
+            const listItem = document.createElement('li');
+            listItem.textContent = guess;
+            listItem.className = 'correct';
+            guessList.appendChild(listItem);
+            guessInput.value = ''; // Clear input
+            if (soundEnabled) {
+                correctSound.currentTime = 0; // Reset sound to start
+                correctSound.play(); // Play correct sound
             }
+            notification.style.display = 'none'; // Hide notification on correct guess
         } else {
+            // Show notification for wrong answer
+            notification.style.display = 'block';
+            notification.style.opacity = '1'; // Ensure it's visible
+            setTimeout(() => {
+                notification.style.opacity = '0'; // Fade out effect
+            }, 2000); // Fade out after 2 seconds
+            guessInput.value = ''; // Clear input
             if (soundEnabled) {
                 wrongSound.currentTime = 0; // Reset sound to start
                 wrongSound.play(); // Play wrong sound
             }
         }
-        guessInput.value = '';
         guessInput.focus();
     }
 
-    // Give up and reveal all possible answers
+    // Give up and show answers
     function giveUp() {
-        // Clear previous guesses from the list to avoid duplication
-        guessList.innerHTML = '';
-
-        // Add guessed words to the list (in green)
-        guessedWords.forEach(word => {
+        guessList.innerHTML = ''; // Clear current list
+        possibleAnswers.forEach(answer => {
             const listItem = document.createElement('li');
-            listItem.textContent = word;
-            listItem.className = 'correct';
+            listItem.textContent = answer;
+            listItem.className = 'correct'; // Display all correct answers
             guessList.appendChild(listItem);
         });
-
-        // Add missed words (in red)
-        possibleAnswers.forEach(word => {
-            if (!guessedWords.has(word)) {
-                const listItem = document.createElement('li');
-                listItem.textContent = word;
-                listItem.className = 'missed';
-                guessList.appendChild(listItem);
-            }
-        });
-
-        guessInput.value = ''; // Clear the input field
-        guessInput.disabled = true; // Disable input after giving up
+        guessInput.value = ''; // Clear input
+        notification.style.display = 'none'; // Hide notification on giving up
     }
 
     // Toggle sound on/off
     function toggleSound() {
         soundEnabled = !soundEnabled; // Toggle the sound state
+        musicIcon.src = soundEnabled ? 'https://github.com/FreddieThePebble/Words-In-Words/raw/main/Icons/musicOn.png' : 'https://github.com/FreddieThePebble/Words-In-Words/raw/main/Icons/musicOff.png';
         if (soundEnabled) {
-            musicIcon.src = "https://github.com/FreddieThePebble/Words-In-Words/raw/main/Icons/musicOn.png"; // Show sound on icon
-        } else {
-            musicIcon.src = "https://github.com/FreddieThePebble/Words-In-Words/raw/main/Icons/musicOff.png"; // Show sound off icon
+            toggleSoundEffect.play(); // Play toggle sound
         }
-        toggleSoundEffect.currentTime = 0; // Reset sound to start
-        toggleSoundEffect.play(); // Play sound toggle effect
     }
 
-    // Exit icon click event
-    exitIcon.addEventListener('click', function() {
-        exitSound.currentTime = 0; // Reset sound to start
+    // Navigate to the exit link
+    exitIcon.onclick = function () {
         exitSound.play(); // Play exit sound
-        setTimeout(() => {
-            window.open("https://www.youtube.com/watch?v=pqPWVOgoYXc", '_blank'); // Open YouTube in a new tab
-        }, 500); // Delay to allow sound to play
-    });
+        window.location.href = "https://www.youtube.com/watch?v=pqPWVOgoYXc";
+    };
 
     // Start the game
     loadWords();
 </script>
+
 </body>
 </html>
