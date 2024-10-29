@@ -118,8 +118,10 @@
 
 <!-- Icons at the bottom -->
 <div class="icon-container">
-    <img src="https://github.com/FreddieThePebble/Words-In-Words/raw/main/Icons/info.png" alt="Info" />
-    <img id="music-icon" src="https://github.com/FreddieThePebble/Words-In-Words/raw/main/Icons/musicOn.png" alt="Music On/Off" onclick="toggleSound()" />
+
+<img src="https://github.com/FreddieThePebble/Words-In-Words/raw/main/Icons/info.png" alt="Info" id="info-icon" />
+
+     <img id="music-icon" src="https://github.com/FreddieThePebble/Words-In-Words/raw/main/Icons/musicOn.png" alt="Music On/Off" onclick="toggleSound()" />
     <img id="refresh-icon" src="https://github.com/FreddieThePebble/Words-In-Words/raw/main/Icons/refresh.png" alt="Refresh" onclick="refreshWord()" />
     <img src="https://github.com/FreddieThePebble/Words-In-Words/raw/main/Icons/exit.png" alt="Exit" id="exit-icon" />
 </div>
@@ -148,6 +150,7 @@
     const exitIcon = document.getElementById("exit-icon");
     const musicIcon = document.getElementById("music-icon");
     const refreshIcon = document.getElementById("refresh-icon");
+    const infoicon = document.getElementById("info-icon");
 
     // Load word list and initialize the game
     async function loadWords() {
@@ -232,6 +235,12 @@
         exitSound.currentTime = 0; // Reset sound to start
         exitSound.play(); // Play exit sound
         window.open("https://www.youtube.com/watch?v=pqPWVOgoYXc", "_blank");
+    };
+        // Redirect to Instructions pdf
+    infoicon.onclick = function() {
+        exitSound.currentTime = 0; // Reset sound to start
+        exitSound.play(); // Play exit sound
+        window.open("https://github.com/FreddieThePebble/Words-In-Words/blob/main/Instructions.pdf", "_blank");
     };
 
     // wtf wont this thingy work, ive been coding for like 2 days, ok, i will get chatGPT to fix it FECK!!!
